@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.mapper.UserMapper">
+
+
+
+<!--
+select 标签必须设置属性 resultType 或 resultMap，用于设置实体类和数据库表的映射关系
+    resultType：自动映射，用于属性名和表中字段名一致的情况
+    resultMap：自定义映射，用于一对多或多对一或字段名和属性名不一致的情况
+-->
+
+    <!--
+        若mapper接口中的方法参数为单个的字面量类型，此时可以使用{}和#{}以任意的名称（最好见名识意）获取参数的值
+        注意 {} 需要手动加单引号
+    -->
+    <select id="getUserById" resultType="User">
+        select * from t_user where id = #{id}
+    </select>
+
+    <!--
+        若 mapper 接口中的方法参数为多个时，此时 MyBatis 会自动将这些参数放在一个 map 集合中，通过 ${} 或 #{} 访问 map 集合的键
+        两种键的定义方式:
+            - 以 arg0, arg1...为键，以参数为值. 注意 arg 是从 arg0 开始的
+            - 以 param1, param2...为键，以参数为值. 注意 param 是从 param1 开始的
+
+        注意 {} 需要手动加单引号
+    -->
+    <select id="getUserByGenderAge" resultType="User">
+        select * from t_user where gender = #{arg0} and age = #{param2}
+    </select>
+
+
+<!--
+    可以通过 @Param 注解标识 mapper 接口中的方法参数，此时会将这些参数放在 map 集合中
+    两种获取参数值的方式:
+    - 以 @Param 注解的 value 属性值为键，以参数为值；
+    - 以param1,param2...为键，以参数为值；
+-->
+    <select id="getUserByGenderAgeV2" resultType="User">
+        select * from t_user where gender = #{xb} and age = #{param2}
+    </select>
+
+<!--
+    若 mapper 接口中的方法需要的参数为多个时，此时可以手动创建 map 集合，将这些数据放在 map 中只需要通过 ${} 或 #{} 访问 map 集合的键就可以获取相对应的值
+    注意 {} 需要手动加单引号
+-->
+    <insert id="insertUserByMap" useGeneratedKeys="true" keyProperty="id">
+        insert into t_user values(#{id},#{username}, #{password} ,${age}, '${gender}')
+    </insert>
+
+
+<!--
+    若 mapper 接口中的方法参数为实体类对象时此时可以使用 ${} 和 #{}，通过访问实体类对象中的属性名获取属性值
+    注意 {} 需要手动加单引号
+-->
+    <insert id="insertUserByObject" useGeneratedKeys="true" keyProperty="id">
+        insert into t_user values(#{id},#{username}, #{password} ,${age}, '${gender}')
+    </insert>
+
+    <!--    List<User> getAllUser();-->
+    <select id="getAllUser">
+        select * from t_user
+    </select>
+
+
+    <!--int getCount();-->
+    <select id="getCount" resultType="_integer">
+        select count(id) from t_user
+    </select>
+
+    <!--List<Integer> getAllAge();-->
+    <select id="getAllAge" resultType="_integer">
+        select age from t_user
+    </select>
+
+    <select id="getUserViaMap" resultType="map">
+        select * from t_user limit 1
+    </select>
+
+    <select id="getAllUserToMap" resultType="map">
+        select * from t_user
+    </select>
+    <select id="getAllUserToMapV2" resultType="map">
+        select * from t_user
+    </select>
+</mapper>

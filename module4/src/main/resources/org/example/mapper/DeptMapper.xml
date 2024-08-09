@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.mapper.DeptMapper">
+
+    <resultMap id="DeptResultType" type="Dept">
+        <id property="did" column="did"/>
+        <result property="deptName" column="dept_name"/>
+    </resultMap>
+
+    <select id="getDept" resultMap="DeptResultType">
+        select
+            did,
+            dept_name
+        from dept
+        where did = #{did}
+    </select>
+
+</mapper>

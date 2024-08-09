@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.mapper.EmpMapper">
+
+    <!--
+        resultMap：设置自定义映射
+        属性：
+            id：表示自定义映射的唯一标识，不能重复
+            type：查询的数据要映射的实体类的类型
+        子标签：
+            id：设置主键的映射关系
+            result：设置普通字段的映射关系
+        子标签属性：
+            property：设置映射关系中实体类中的属性名
+            column：
+                设置映射关系中表中的字段名.
+                若字段名和实体类中的属性名不一致，可以在此处设置自定义映射名称.
+                每个字段都要配置映射名称，即使字段名和属性名一致的属性也要映射
+    -->
+
+    <!--级联方式处理映射关系-->
+    <resultMap id="empAndDeptResultMap1" type="Emp">
+        <id property="eid" column="eid"></id>
+        <result property="empName" column="emp_name"></result>
+        <result property="age" column="age"></result>
+        <result property="sex" column="sex"></result>
+        <result property="dept.did" column="did"></result>
+        <result property="dept.deptName" column="dept_name"></result>
+    </resultMap>
+
+    <!--
+            association：处理多对一的映射关系
+            property：需要处理多对的映射关系的属性名. 下面样例中的 dept 代表 Emp.dept
+            javaType：该属性的类型. 下面样例中的 Dept 代表 Emp.dept 的类型
+    -->
+    <resultMap id="empAndDeptResultMap2" type="Emp">
+        <id property="eid" column="eid"></id>
+        <result property="empName" column="emp_name"></result>
+        <result property="age" column="age"></result>
+        <result property="sex" column="sex"></result>
+        <association property="dept" javaType="Dept">
+            <id property="did" column="did"></id>
+            <result property="deptName" column="dept_name"></result>
+        </association>
+    </resultMap>
+
+
+
+    <resultMap id="empAndDeptByStepResultMap" type="Emp">
+        <id property="eid" column="eid"></id>
+        <result property="empName" column="emp_name"></result>
+        <result property="age" column="age"></result>
+        <result property="sex" column="sex"></result>
+        <!--column：设置分步查询时使用的字段-->
+        <association property="dept"
+                     select="org.example.mapper.DeptMapper.getDept"
+                     column="did"></association>
+    </resultMap>
+
+
+    <select id="getEmpByStep" resultMap="empAndDeptByStepResultMap">
+        select * from emp where eid = #{eid}
+    </select>
+
+    <select id="getEmpV1" resultMap="empAndDeptResultMap1">
+        select
+        t1.eid,
+        t1.emp_name,
+        t1.age,
+        t1.sex,
+        t2.did,
+        t2.dept_name
+        from emp t1 join dept t2
+        on t1.did = t2.did
+        where t1.eid = #{eid}
+    </select>
+
+
+    <select id="getEmpV2" resultMap="empAndDeptResultMap2">
+        select
+        t1.eid,
+        t1.emp_name,
+        t1.age,
+        t1.sex,
+        t2.did,
+        t2.dept_name
+        from emp t1 join dept t2
+        on t1.did = t2.did
+        where t1.eid = #{eid}
+    </select>
+
+    <select id="getEmps" resultType="Emp">
+        select * from emp where did = #{did}
+    </select>
+</mapper>

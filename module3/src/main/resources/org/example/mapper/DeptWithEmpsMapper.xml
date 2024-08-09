@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.mapper.DeptWithEmpsMapper">
+
+    <resultMap id="DeptWithEmpsResultType" type="DeptWithEmps">
+        <id property="did" column="did"/>
+        <result property="deptName" column="dept_name"/>
+        <!--
+            collection：用来处理一对多的映射关系
+            property: 对应的属性名称
+            ofType：表示 property 对应的属性这个集合中存储数据的类型
+        -->
+        <collection property="emps" ofType="Emp">
+            <id property="eid" column="eid"/>
+            <result property="empName" column="emp_name"/>
+            <result property="age" column="age"/>
+            <result property="sex" column="sex"/>
+            <result property="dept.did" column="did"/>
+            <result property="dept.deptName" column="dept_name"/>
+        </collection>
+    </resultMap>
+
+
+    <resultMap id="DeptWithEmpsResultTypeByStep" type="DeptWithEmps">
+        <id property="did" column="did"/>
+        <result property="deptName" column="dept_name"/>
+        <!--
+            collection：用来处理一对多的映射关系
+            property: 对应的属性名称
+            ofType：表示 property 对应的属性这个集合中存储数据的类型
+        -->
+        <collection
+            property="emps"
+            select="org.example.mapper.EmpMapper.getEmps"
+            column="did"
+        />
+    </resultMap>
+
+    <select id="getDeptWithEmps" resultMap="DeptWithEmpsResultType">
+        select
+            t1.did,
+            t1.dept_name,
+            t2.eid,
+            t2.emp_name,
+            t2.age,
+            t2.sex
+        from dept t1 left join emp t2
+        on t1.did = t2.did
+        where t1.did = #{did}
+    </select>
+
+    <select id="getDeptWithEmpsByStep" resultMap="DeptWithEmpsResultTypeByStep">
+        select did, dept_name from dept where did = #{did}
+    </select>
+</mapper>

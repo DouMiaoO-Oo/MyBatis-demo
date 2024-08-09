@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.mapper.UserMapper">
+<!--    int insertUser();-->
+    <insert id="insertUser">
+        insert into t_user values(null,'张三','123',23,'女')
+    </insert>
+
+<!--    void updateUser();-->
+    <update id="updateUser">
+        update t_user
+        set username = '李四'
+        where username = '张三'
+        and id =
+        (
+            select id from  -- 规避 ERROR 1093
+            (
+                select min(id) as id from t_user where username = '张三'
+            ) as t
+        )
+    </update>
+
+<!--    int deleteUser();-->
+    <delete id="deleteUser">
+        delete from t_user
+        where username = '张三'
+        and id =
+        (
+            select id from  -- 规避 ERROR 1093
+            (
+                select max(id) as id from t_user where username = '张三'
+            ) as t
+        )
+    </delete>
+
+
+<!--    User getUser();-->
+
+<!--
+select 标签必须设置属性 resultType 或 resultMap，用于设置实体类和数据库表的映射关系
+    resultType：自动映射，用于属性名和表中字段名一致的情况
+    resultMap：自定义映射，用于一对多或多对一或字段名和属性名不一致的情况
+-->
+    <select id="getUser" resultType="User">
+        select * from t_user limit 1
+    </select>
+
+
+<!--    List<User> getAllUser();-->
+    <select id="getAllUser">
+        select * from t_user
+    </select>
+</mapper>
